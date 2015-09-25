@@ -1,4 +1,12 @@
-function [ orientacion ] = calcOrientation(tri )
+%==========================================================================
+% Function - calcOrientation
+% 
+%
+%==========================================================================
+
+% function [ orientacion ] = calcOrientation(tri )
+
+function [ orientacion ] = calcOrientation(tri,puntos)
 %calcOrientation calcula la orientacion de un triangulo de entrada
 
     orden=sort(tri(:,1));%Ordena segun posiciones de x
