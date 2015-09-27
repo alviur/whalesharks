@@ -30,11 +30,21 @@ function [v1,mlog]=grothAlgorithm(A,B,epsilon)
 
     tri1 = delaunay(A(:,1),A(:,2));
     tri2 = delaunay(B(:,1),B(:,2));
-
+    
+    
+    % Graficas
+    %subplot(1,2,1)
     %triplot(tri1,A(:,1),A(:,2))% grafica triangulos
-    %figure
+    %subplot(1,2,2)
     %triplot(tri2,B(:,1),B(:,2))% grafica triangulos
-
+    
+    % Organizacion triangulos segun Groth
+    tri1=setGrothTriangles(tri1,A);
+    tri2=setGrothTriangles(tri2,B);
+    
+    % Normalizacion de coordenadas
+    A = (A - min(min(A)))/(max(max(A)) - min(min(A)));
+    B = (B - min(min(B)))/(max(max(B)) - min(min(B)));
 
     % Filtro de triangulos 
 
@@ -64,6 +74,8 @@ function [v1,mlog]=grothAlgorithm(A,B,epsilon)
         % Contadores
          contFalseMat=0;
          contTrueMat=0;
+         Match1Ant=10000;
+         Match2Ant=10000;
 
 
         % Llenado de la tabla de matching de trigngulos
@@ -73,7 +85,11 @@ function [v1,mlog]=grothAlgorithm(A,B,epsilon)
 
             for j=1:size(tri2,1)
 
-                if(((R(i)-Rb(j))^2<tr(i)^2 + trb(j)^2)  && ((C(i)-Cb(j))^2<tc(i)^2 + tcb(j)^2))
+                if(((R(i)-Rb(j))^2<tr(i)^2 + trb(j)^2)  && ((C(i)-Cb(j))^2<tc(i)^2 + tcb(j)^2 && ...
+                        (R(i)-Rb(j))^2)<Match1Ant && (C(i)-Cb(j))^2<Match2Ant)
+                    
+                     Match1Ant=(R(i)-Rb(j))^2;
+                     Match2Ant=(C(i)-Cb(j))^2;
 
 
                     if( (triangleTab(i,j,2)<tr(i)^2 + trb(j)^2)  &&  triangleTab(i,j,3)<tc(i)^2 + tcb(j)^2)
@@ -82,10 +98,10 @@ function [v1,mlog]=grothAlgorithm(A,B,epsilon)
                         orientTri1= ((A(tri1(i,2),1))- (A(tri1(i,1),1)))*((A(tri1(i,3),2))- (A(tri1(i,1),2)))-...
                                     ((A(tri1(i,2),2))- (A(tri1(i,1),2)))*((A(tri1(i,3),1))- (A(tri1(i,1),1)));
                         
-                        orientTri2= ((B(tri2(i,2),1))- (B(tri2(i,1),1)))*((B(tri2(i,3),2))- (B(tri2(i,1),2)))-...
-                                    ((B(tri2(i,2),2))- (B(tri2(i,1),2)))*((B(tri2(i,3),1))- (B(tri2(i,1),1)));
+                        orientTri2= ((B(tri2(j,2),1))- (B(tri2(j,1),1)))*((B(tri2(j,3),2))- (B(tri2(j,1),2)))-...
+                                    ((B(tri2(j,2),2))- (B(tri2(j,1),2)))*((B(tri2(j,3),1))- (B(tri2(j,1),1)));
                                 
-                        if((orientTri1*orientTri2>=0))        
+                        if((orientTri1*orientTri2>=0) )        
 
                             triangleTab(i,j,2)=tr(i)^2 + trb(j)^2;
                             triangleTab(i,j,3)=tc(i)^2 + tcb(j)^2;
@@ -96,9 +112,9 @@ function [v1,mlog]=grothAlgorithm(A,B,epsilon)
                             pointTable1(tri1(i,2),3)= pointTable1(tri1(i,1),3)+1;
                             pointTable1(tri1(i,3),3)= pointTable1(tri1(i,1),3)+1;
 
-                            pointTable2(tri2(i,1),3)= pointTable2(tri2(i,1),3)+1;
-                            pointTable2(tri2(i,2),3)= pointTable2(tri2(i,1),3)+1;
-                            pointTable2(tri2(i,3),3)= pointTable2(tri2(i,1),3)+1;
+                            pointTable2(tri2(j,1),3)= pointTable2(tri2(j,1),3)+1;
+                            pointTable2(tri2(j,2),3)= pointTable2(tri2(j,1),3)+1;
+                            pointTable2(tri2(j,3),3)= pointTable2(tri2(j,1),3)+1;
                             
                             contTrueMat=contTrueMat+1;
                             
@@ -116,6 +132,10 @@ function [v1,mlog]=grothAlgorithm(A,B,epsilon)
                 end
 
             end
+            
+         Match1Ant=10000;
+         Match2Ant=10000;
+
 
 
         end
