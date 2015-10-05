@@ -1,19 +1,21 @@
 %==========================================================================
-%  Groth Descriptors
+%  Spot matching Descriptors
 %  Authors: Alexander Gomez 
 % -----------------------------------------------------------------------
 %  Based on:    
-%  Groth, Edward J. "A pattern-matching algorithm for two-dimensional
-%  coordinate lists." The astronomical journal 91 (1986): 1244-1248.
+%  Arzoumanian, Z., J. Holmberg, and B. Norman. "An astronomical pattern‐
+%  matching algorithm for computer‐aided identification of whale sharks
+%  Rhincodon typus." Journal of Applied Ecology 42, no. 6 (2005): 999-1011.
 % -----------------------------------------------------------------------
-%   [r1,r2,r3,R,C,F,tr,tc,M,orientacion] = grothDescriptors(A,tri,epsilon )
-%
+% [r1,r2,r3,R,C,F,tr,tc,M,orientacion,theta,s] = spotMatchingDescriptors(A,tri,epsilon )
 %   A : n x 2 matrix with n points wirh x and y position 
 %   tri : Delaunay triangulation of A
 %   epsilon: Tolerance factor Groth algorithm
 %==========================================================================
 
-function [r1,r2,r3,R,C,F,tr,tc,M,orientacion] = grothDescriptors(A,tri,epsilon )
+
+
+function [r1,r2,r3,R,C,F,tr,tc,M,orientacion,theta,s] = spotMatchingDescriptors(A,tri,epsilon )
 %grothDescriptors Calcula las caracteristicas para algoritmo de Groth
 
 
@@ -40,6 +42,19 @@ r1=(((A(tri(:,2),1)-A(tri(:,3),1)).^2) + ((A(tri(:,2),2)-A(tri(:,3),2)).^2)).^(0
 M=log10( r2+r3+r1);
 
 
+% Calculo rotation angle
+
+xc=(1/3)*(A(tri(:,1),1)+A(tri(:,2),1)+A(tri(:,3),1));
+yc=(1/3)*(A(tri(:,1),2)+A(tri(:,2),2)+A(tri(:,3),2));
+
+theta=atan((A(tri(:,1),2)-yc)./(A(tri(:,1),1)-xc));
+
+
+% tamaño del triangulo s
+
+s=r3./(max(r3));
+
+
 % Calculo de orientaicion
 
 orientacion=zeros(size(tri,1));
@@ -50,4 +65,3 @@ for i=1:size(tri,1)
 end
 
 end
-
